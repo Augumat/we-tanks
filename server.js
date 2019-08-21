@@ -15,7 +15,7 @@ app.use('/static', express.static(__dirname + '/static'));
 app.get('/', (request, response) => {
   response.sendFile(path.join(__dirname, 'index.html'));
 });
-server.listen(5000, '0.0.0.0', () => {
+server.listen(5000, () => {
   console.log('Starting server on port 5000');
 });
 
