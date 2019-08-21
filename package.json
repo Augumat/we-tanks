@@ -1,0 +1,23 @@
+{
+  "name": "we-tanks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Augumat/we-tanks.git"
+  },
+  "author": "Augumat",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/Augumat/we-tanks/issues"
+  },
+  "homepage": "https://github.com/Augumat/we-tanks#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.2.0"
+  }
+}
