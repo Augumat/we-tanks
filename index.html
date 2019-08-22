@@ -6,15 +6,17 @@
         background-color: #222222;
       }
       canvas {
-        width: 800px;
-        height: 600px;
-        border: 5px solid white;
+        width: 1280px;
+        height: 720px;
+        border: 2px solid white;
       }
     </style>
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
     <canvas id="canvas"></canvas>
+    <img id="tankBase" src="/static/tankBase.png" />
+    <img id="tankGun" src="/static/tankGun.png" />
   </body>
   <script src="/static/game.js"></script>
 </html>

@@ -1,8 +1,19 @@
 {
+  "window": {
+    "width": 1280,
+    "height": 720
+  },
   "player": {
     "speed": 1.8,
     "speedTurning": 1,
     "turnIncrement": 90,
     "fireIncrement": 45
+  },
+  "bullet": {
+    "speed": 2,
+    "bounces": 2
+  },
+  "bomb": {
+    "timer": 6
   }
 }

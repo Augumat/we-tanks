@@ -64,12 +64,12 @@ function handleClientIntent(socket) {
 
     //Handle turning
     if (data.intent.left) {
-      player.th -= TAU / cfg.player.turnIncrement;
-      (player.th < 0) ? player.th += TAU : {};
-    }
-    if (data.intent.right) {
       player.th += TAU / cfg.player.turnIncrement;
       (player.th >= TAU) ? player.th -= TAU : {};
+    }
+    if (data.intent.right) {
+      player.th -= TAU / cfg.player.turnIncrement;
+      (player.th < 0) ? player.th += TAU : {};
     }
 
     //Handle throttle
@@ -94,7 +94,7 @@ function handleClientIntent(socket) {
     //todo
 
     //BELOW IS TEMP, REMOVE AFTER TESTING
-    if (player.x < 0 || player.x >= 800 || player.y < 0 || player.y >= 600) {
+    if (player.x < 0 || player.x >= cfg.window.width || player.y < 0 || player.y >= cfg.window.height) {
       player.x = 300;
       player.y = 300;
     }

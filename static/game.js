@@ -85,33 +85,44 @@ function onMouseUpdate(evt) {
 
 //Set hooks TEMP
 var canvas = document.getElementById('canvas');
-canvas.width = 800;
-canvas.height = 600;
+canvas.width = 1280;
+canvas.height = 720;
+
+var tankBase = document.getElementById('tankBase');
+var tankGun = document.getElementById('tankGun');
 
 var context = canvas.getContext('2d');
 socket.on('state', state => {
-  context.clearRect(0, 0, 800, 600);
+  context.clearRect(0, 0, canvas.width, canvas.height);
   for (var id in state.players) {
     let player = state.players[id];
 
-    //Draw the player circle
+    //Draw the player's tank base with the correct heading
     context.beginPath();
-    context.fillStyle = 'gray';
-    context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
-    context.fill();
+    context.translate(player.x, player.y);
+    context.rotate(-player.th);
+    context.drawImage(
+      tankBase,
+      -(tankBase.width / 2),
+      -(tankBase.height / 2),
+      tankBase.width,
+      tankBase.height
+    );
+    context.rotate(player.th);
+    context.translate(-player.x, -player.y);
 
-    //Draw the player's tank heading
+    //Draw the player's gun with the correct heading
     context.beginPath();
-    context.strokeStyle = 'aqua';
-    context.moveTo(player.x, player.y);
-    context.lineTo(player.x + 16 * Math.sin(player.th), player.y + 16 * Math.cos(player.th));
-    context.stroke();
-
-    //Draw the player's gun heading
-    context.beginPath();
-    context.strokeStyle = 'red';
-    context.moveTo(player.x, player.y);
-    context.lineTo(player.x + 24 * Math.sin(player.gh), player.y + 24 * Math.cos(player.gh));
-    context.stroke();
+    context.translate(player.x, player.y);
+    context.rotate(-player.gh);
+    context.drawImage(
+      tankGun,
+      -(tankBase.width / 2),
+      -(tankBase.height / 2),
+      tankBase.width,
+      tankBase.height
+    );
+    context.rotate(player.gh);
+    context.translate(-player.x, -player.y);
   }
 });
