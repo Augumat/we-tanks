@@ -27,7 +27,9 @@ server.listen(5000, () => {
 
 
 //Handle a new connection
-var players = {};
+var state = {
+  players: {}
+};
 io.on('connect', socket => {
   handleConnectEvent(socket);
   handleClientIntent(socket);
@@ -35,8 +37,7 @@ io.on('connect', socket => {
 });
 
 setInterval(() => {
-  //console.log(players.splice(0));
-  io.sockets.emit('state', players);
+  io.sockets.emit('state', state);
 }, 1000 / 60);
 
 
@@ -46,10 +47,11 @@ setInterval(() => {
 function handleConnectEvent(socket) {
   socket.on('newPlayer', () => {
     console.log('new player with ID ' + socket.id);
-    players[socket.id] = {
+    state.players[socket.id] = {
       x: 300, //x coord
       y: 300, //y coord
-      h: 0    //heading
+      th: 0,  //tank heading
+      gh: 0   //gun heading
     };
   });
 }
@@ -58,24 +60,39 @@ function handleConnectEvent(socket) {
 function handleClientIntent(socket) {
   socket.on('clientData', data => {
     //console.log('movement recorded: ' + JSON.stringify(data));
-    var player = players[socket.id] || {};
+    var player = state.players[socket.id] || {};
+
+    //Handle turning
     if (data.intent.left) {
-      player.h -= TAU / cfg.player.turnIncrement;
-      (player.h < 0) ? player.h += TAU : {};
+      player.th -= TAU / cfg.player.turnIncrement;
+      (player.th < 0) ? player.th += TAU : {};
     }
     if (data.intent.right) {
-      player.h += TAU / cfg.player.turnIncrement;
-      (player.h >= TAU) ? player.h -= TAU : {};
+      player.th += TAU / cfg.player.turnIncrement;
+      (player.th >= TAU) ? player.th -= TAU : {};
     }
+
+    //Handle throttle
     if (data.intent.forward) {
       if (!data.intent.right && !data.intent.left) {
-        player.x += cfg.player.speed * Math.sin(player.h);
-        player.y += cfg.player.speed * Math.cos(player.h);
+        player.x += cfg.player.speed * Math.sin(player.th);
+        player.y += cfg.player.speed * Math.cos(player.th);
       } else {
-        player.x += cfg.player.speedTurning * Math.sin(player.h);
-        player.y += cfg.player.speedTurning * Math.cos(player.h);
+        player.x += cfg.player.speedTurning * Math.sin(player.th);
+        player.y += cfg.player.speedTurning * Math.cos(player.th);
       }
     }
+
+    //Handle aiming
+    //player.gh = 4 * Math.atan(data.mousePos.x - player.x) / (data.mousePos.y - player.y);\
+    player.gh = Math.atan2(data.mousePos.x - player.x, data.mousePos.y - player.y);
+
+    //Handle firing
+    //todo
+
+    //Handle placing a bomb
+    //todo
+
     //BELOW IS TEMP, REMOVE AFTER TESTING
     if (player.x < 0 || player.x >= 800 || player.y < 0 || player.y >= 600) {
       player.x = 300;
