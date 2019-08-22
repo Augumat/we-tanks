@@ -1,0 +1,8 @@
+{
+  "player": {
+    "speed": 2.5,
+    "speedTurning": 1.5,
+    "turnIncrement": 60,
+    "fireIncrement": 45
+  }
+}

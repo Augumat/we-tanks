@@ -3,37 +3,41 @@ var socket = io();
 //Handle a new player joining
 socket.emit('newPlayer');
 setInterval(() => {
-  socket.emit('intent', intent);
+  socket.emit('clientData', clientData);
 }, 1000 / 60);
 
 
 
 
-//Basic template for the state of client intent
-var intent = {
-  forward: false,
-  left: false,
-  right: false,
-  mouse: false
-}
-
-//Bas
-var mousePos = {
-  x: 0,
-  y: 0
-}
+//Template for packets sent to the Server
+var clientData = {
+  intent: {
+    forward: false,
+    left: false,
+    right: false,
+    space: false,
+    mouse: false
+  },
+  mousePos: {
+    x: 0,
+    y: 0
+  }
+};
 
 //Handle key presses
 document.addEventListener('keydown', event => {
   switch (event.keyCode) {
     case 65: // A
-      intent.left = true;
+      clientData.intent.left = true;
       break;
     case 87: // W
-      intent.forward = true;
+      clientData.intent.forward = true;
       break;
     case 68: // D
-      intent.right = true;
+      clientData.intent.right = true;
+      break;
+    case 32: // [space]
+      clientData.intent.space = true;
       break;
   }
 });
@@ -41,34 +45,33 @@ document.addEventListener('keydown', event => {
 document.addEventListener('keyup', event => {
   switch (event.keyCode) {
     case 65: // A
-      intent.left = false;
+      clientData.intent.left = false;
       break;
     case 87: // W
-      intent.forward = false;
+      clientData.intent.forward = false;
       break;
     case 68: // D
-      intent.right = false;
+      clientData.intent.right = false;
+      break;
+    case 32: // [space]
+      clientData.intent.space = false;
       break;
   }
 });
 
 //Handle mouse presses
 document.addEventListener('mousedown', event => {
-  intent.mouse = true;
+  clientData.intent.mouse = true;
 });
 //Handle mouse releases
 document.addEventListener('mouseup', event => {
-  intent.mouse = false;
+  clientData.intent.mouse = false;
 });
 
 
 
 
 //Set hooks TEMP
-socket.on('message', data => {
-  console.log(data);
-});
-
 var canvas = document.getElementById('canvas');
 canvas.width = 800;
 canvas.height = 600;

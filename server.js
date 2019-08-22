@@ -7,6 +7,10 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
+//Grab config
+const cfg = require('./config.json');
+const TAU = Math.PI * 2;
+
 //Set the port and path
 app.set('port', 5000);
 app.use('/static', express.static(__dirname + '/static'));
@@ -31,7 +35,7 @@ io.on('connect', socket => {
 });
 
 setInterval(() => {
-  console.log(JSON.stringify(players));
+  //console.log(players.splice(0));
   io.sockets.emit('state', players);
 }, 1000 / 60);
 
@@ -52,26 +56,27 @@ function handleConnectEvent(socket) {
 
 //Handle client intent
 function handleClientIntent(socket) {
-  socket.on('intent', data => {
+  socket.on('clientData', data => {
     //console.log('movement recorded: ' + JSON.stringify(data));
     var player = players[socket.id] || {};
-    if (data.left) {
-      player.h -= Math.PI / 30;
-      (player.h < 0) ? player.h += 2 * Math.PI : {};
+    if (data.intent.left) {
+      player.h -= TAU / cfg.player.turnIncrement;
+      (player.h < 0) ? player.h += TAU : {};
     }
-    if (data.right) {
-      player.h += Math.PI / 30;
-      (player.h >= 2 * Math.PI) ? player.h -= 2 * Math.PI : {};
+    if (data.intent.right) {
+      player.h += TAU / cfg.player.turnIncrement;
+      (player.h >= TAU) ? player.h -= TAU : {};
     }
-    if (data.forward) {
-      if (!data.right && !data.left) {
-        player.x += 2.5 * Math.sin(player.h);
-        player.y += 2.5 * Math.cos(player.h);
+    if (data.intent.forward) {
+      if (!data.intent.right && !data.intent.left) {
+        player.x += cfg.player.speed * Math.sin(player.h);
+        player.y += cfg.player.speed * Math.cos(player.h);
       } else {
-        player.x += 1.5 * Math.sin(player.h);
-        player.y += 1.5 * Math.cos(player.h);
+        player.x += cfg.player.speedTurning * Math.sin(player.h);
+        player.y += cfg.player.speedTurning * Math.cos(player.h);
       }
     }
+    //BELOW IS TEMP, REMOVE AFTER TESTING
     if (player.x < 0 || player.x >= 800 || player.y < 0 || player.y >= 600) {
       player.x = 300;
       player.y = 300;
