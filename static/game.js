@@ -25,7 +25,7 @@ var clientData = {
   }
 };
 
-//Handle key presses
+//Handle keyboard input
 document.addEventListener('keydown', event => {
   switch (event.keyCode) {
     case 65: // A
@@ -42,7 +42,6 @@ document.addEventListener('keydown', event => {
       break;
   }
 });
-//Handle key releases
 document.addEventListener('keyup', event => {
   switch (event.keyCode) {
     case 65: // A
@@ -60,18 +59,15 @@ document.addEventListener('keyup', event => {
   }
 });
 
-//Handle mouse presses
+//Handle mouse input
 document.addEventListener('mousedown', evt => {
   onMouseUpdate(evt);
   clientData.intent.mouse = true;
 });
-//Handle mouse releases
 document.addEventListener('mouseup', evt => {
   onMouseUpdate(evt);
   clientData.intent.mouse = false;
 });
-
-//Updates the mouse position when moved within the window
 document.addEventListener('mousemove', onMouseUpdate, false);
 document.addEventListener('mouseenter', onMouseUpdate, false);
 function onMouseUpdate(evt) {
@@ -83,11 +79,12 @@ function onMouseUpdate(evt) {
 
 
 
-//Set hooks TEMP
+//Get references to resources and page elements
 var canvas = document.getElementById('canvas');
 canvas.width = 1280;
 canvas.height = 720;
-
+//var tankBase = new Image('/static/tankBase.png');
+//var tankGun = new Image('/static/tankGun.png');
 var tankBase = document.getElementById('tankBase');
 var tankGun = document.getElementById('tankGun');
 
@@ -101,6 +98,7 @@ socket.on('state', state => {
     context.beginPath();
     context.translate(player.x, player.y);
     context.rotate(-player.th);
+    //context.tint(255, 128, 0, 200);
     context.drawImage(
       tankBase,
       -(tankBase.width / 2),
