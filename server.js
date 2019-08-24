@@ -26,14 +26,40 @@ server.listen(5000, () => {
 
 
 
-//Handle a new connection
+//
+const PLAYER_TEMPLATE = {
+  client: {
+    intent: {
+      forward: false,
+      left: false,
+      right: false,
+      space: false,
+      mouse: false
+    },
+    mousePos: {
+      x: 0,
+      y: 0
+    }
+  },
+  x: 64, //x coord
+  y: 64, //y coord
+  th: 0, //tank heading
+  gh: 0, //gun heading
+  gc: 0  //gun cooldown
+};
+const BULLET_TEMPLATE = {};
+
+//Define state
+var currentBulletId;
 var state = {
   players: {},
   bullets: {}
 };
+
+//Handle a new connection
 io.on('connect', socket => {
   handleConnectEvent(socket);
-  handleClientIntent(socket);
+  handleClientData(socket);
   //handleDisconnectEvent(socket);
 });
 
@@ -44,18 +70,18 @@ setInterval(() => {
     var player = state.players[id] || {};
 
     //Handle turning
-    if (player.intent.left) {
+    if (player.client.intent.left) {
       player.th += TAU / cfg.player.turnIncrement;
       (player.th >= TAU) ? player.th -= TAU : {};
     }
-    if (data.intent.right) {
+    if (player.client.intent.right) {
       player.th -= TAU / cfg.player.turnIncrement;
       (player.th < 0) ? player.th += TAU : {};
     }
 
     //Handle throttle
-    if (player.intent.forward) {
-      if (!player.intent.right && !player.intent.left) {
+    if (player.client.intent.forward) {
+      if (!player.client.intent.right && !player.client.intent.left) {
         player.x += cfg.player.speed * Math.sin(player.th);
         player.y += cfg.player.speed * Math.cos(player.th);
       } else {
@@ -66,12 +92,21 @@ setInterval(() => {
 
     //Handle aiming
     //player.gh = 4 * Math.atan(data.mousePos.x - player.x) / (data.mousePos.y - player.y);\
-    player.gh = Math.atan2(player.mousePos.x - player.x, player.mousePos.y - player.y);
+    player.gh = Math.atan2(player.client.mousePos.x - player.x, player.client.mousePos.y - player.y);
 
     //Handle firing
-    if (player.intent.mouse && player.gc == 0) {
+    console.log(player.gc);
+    if (player.gc > 0) {
+      player.gc--;
+    } else if (player.client.intent.mouse) {
+      //Set the firing delay
       player.gc = cfg.player.fireIncrement;
-      //create bullet here
+      //Create the bullet
+      state.bullets[currentBulletId++] = {
+        x: player.x, //x coord
+        y: player.y, //y coord
+        h: player.gh //heading
+      }
     }
 
     //Handle placing a bomb
@@ -82,6 +117,17 @@ setInterval(() => {
       player.x = 300;
       player.y = 300;
     }
+  }
+
+  //Handle bullet movement
+  for (var id in state.bullets) {
+    var bullet = state.bullets[id] || {};
+
+    //Update position
+
+
+    //Handle collision
+
   }
 
   //Send the game's state to the client afterwards
@@ -95,22 +141,15 @@ setInterval(() => {
 function handleConnectEvent(socket) {
   socket.on('newPlayer', () => {
     console.log('new player with ID ' + socket.id);
-    state.players[socket.id] = {
-      intent: {},
-      x: 300, //x coord
-      y: 300, //y coord
-      th: 0,  //tank heading
-      gh: 0,  //gun heading
-      gc: 0   //gun cooldown
-    };
+    state.players[socket.id] = PLAYER_TEMPLATE;
   });
 }
 
-//Handle client intent
-function handleClientIntent(socket) {
+//Handle client input data
+function handleClientData(socket) {
   socket.on('clientData', data => {
     //console.log('movement recorded: ' + JSON.stringify(data));
-    state.players[socket.id].intent = data;
+     state.players[socket.id] ? state.players[socket.id].client = data : {};
   });
 }
 
