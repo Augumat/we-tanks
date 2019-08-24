@@ -95,56 +95,50 @@ socket.on('state', state => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   //Draw players
-  await new Promise((resolve, reject) => {
-    for (var id in state.players) {
-      let player = state.players[id];
-      //Draw the player's tank base with the correct heading
-      context.beginPath();
-      context.translate(player.x, player.y);
-      context.rotate(-player.th);
-      context.drawImage(
-        tankBase,
-        -(tankBase.width / 2),
-        -(tankBase.height / 2),
-        tankBase.width,
-        tankBase.height
-      );
-      context.rotate(player.th);
-      context.translate(-player.x, -player.y);
-      //Draw the player's gun with the correct heading
-      context.beginPath();
-      context.translate(player.x, player.y);
-      context.rotate(-player.gh);
-      context.drawImage(
-        tankGun,
-        -(tankBase.width / 2),
-        -(tankBase.height / 2),
-        tankBase.width,
-        tankBase.height
-      );
-      context.rotate(player.gh);
-      context.translate(-player.x, -player.y);
-    }
-    resolve();
-  });
+  for (var id in state.players) {
+    let player = state.players[id];
+    //Draw the player's tank base with the correct heading
+    context.beginPath();
+    context.translate(player.x, player.y);
+    context.rotate(-player.th);
+    context.drawImage(
+      tankBase,
+      -(tankBase.width / 2),
+      -(tankBase.height / 2),
+      tankBase.width,
+      tankBase.height
+    );
+    context.rotate(player.th);
+    context.translate(-player.x, -player.y);
+    //Draw the player's gun with the correct heading
+    context.beginPath();
+    context.translate(player.x, player.y);
+    context.rotate(-player.gh);
+    context.drawImage(
+      tankGun,
+      -(tankBase.width / 2),
+      -(tankBase.height / 2),
+      tankBase.width,
+      tankBase.height
+    );
+    context.rotate(player.gh);
+    context.translate(-player.x, -player.y);
+  }
 
   //Draw bullets
-  await new Promise((resolve, reject) => {
-    for (var id in state.bullets) {
-      let bullet = state.bullets[id];
-      context.beginPath();
-      context.translate(bullet.x, bullet.y);
-      context.rotate(-bullet.h);
-      context.drawImage(
-        bullet,
-        -(bullet.width / 2),
-        -(bullet.height / 2),
-        bullet.width,
-        bullet.height
-      );
-      context.rotate(bullet.h);
-      context.translate(-bullet.x, -bullet.y);
-    }
-    resolve();
-  });
+  for (var id in state.bullets) {
+    let bullet = state.bullets[id];
+    context.beginPath();
+    context.translate(bullet.x, bullet.y);
+    context.rotate(-bullet.h);
+    context.drawImage(
+      bullet,
+      -(bullet.width / 2),
+      -(bullet.height / 2),
+      bullet.width,
+      bullet.height
+    );
+    context.rotate(bullet.h);
+    context.translate(-bullet.x, -bullet.y);
+  }
 });
